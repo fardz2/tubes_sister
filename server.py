@@ -6,7 +6,7 @@ import datetime
 class AntreanServer:
     def __init__(self):
         self.klinik = {"A": [], "B": []}
-        self.antrean = dict()
+        self.antrean_klinik = {"A": {}, "B": {}}
 
     def registrasi(self, nomor_rekam, nama, tanggal_lahir, klinik):
         if klinik not in self.klinik:
@@ -16,15 +16,10 @@ class AntreanServer:
         self.klinik[klinik].append(nomor_antrean)
 
         waktu_antrean = datetime.datetime.now() + datetime.timedelta(minutes=30)
-
-        # Mengonversi waktu antrean ke format jam
         format_jam = waktu_antrean.strftime("%m/%d/%Y, %H:%M:%S")
 
-        print("Perkiraan waktu antrean:", format_jam)
-
-        # Konversi nomor antrean ke string sebelum digunakan sebagai kunci
         nomor_antrean_str = str(nomor_antrean)
-        self.antrean[nomor_antrean_str] = {
+        self.antrean_klinik[klinik][nomor_antrean_str] = {
             "nomor_rekam": nomor_rekam,
             "nama": nama,
             "tanggal_lahir": tanggal_lahir,
@@ -38,34 +33,22 @@ class AntreanServer:
         return list(self.klinik.keys())
 
     def daftar_antrean(self):
-        return self.antrean
+        return self.antrean_klinik
 
     def daftar_antrean_klinik(self, klinik):
-        result = {}
-        for nomor_antrean, antrean_info in self.antrean.items():
-            if antrean_info["klinik"] == f"Klinik {klinik}":
-                result[nomor_antrean] = antrean_info
-        return result
+        return self.antrean_klinik.get(klinik, {})
 
-    def hapus_antrean(self, nomor_antrean):
+    def hapus_antrean(self, klinik, nomor_antrean):
         try:
             nomor_antrean_str = str(nomor_antrean)
-            if nomor_antrean_str in self.antrean:
-                klinik = self.antrean[nomor_antrean_str]["klinik"]
+            if klinik in self.antrean_klinik and nomor_antrean_str in self.antrean_klinik[klinik]:
                 nomor_antrean_int = int(nomor_antrean)
 
                 # Hapus antrian dari klinik
                 self.klinik[klinik].remove(nomor_antrean_int)
 
-                # Perbarui waktu antrean untuk antrian yang tersisa di klinik
-                for nomor in self.klinik[klinik]:
-                    nomor_str = str(nomor)
-                    self.antrean[nomor_str]["waktu_antrean"] = (
-                        datetime.datetime.now() + datetime.timedelta(minutes=30)
-                    ).strftime("%m/%d/%Y, %H:%M:%S")
-
                 # Hapus antrian dari daftar antrean
-                del self.antrean[nomor_antrean_str]
+                del self.antrean_klinik[klinik][nomor_antrean_str]
 
                 return True
             else:
