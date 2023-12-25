@@ -20,23 +20,49 @@ class AntreanClient:
         for klinik in klinik_list:
             print(f"- {klinik}")
 
+    def daftar_antrean_klinik(self, klinik):
+        antrean_data = self.server.daftar_antrean_klinik(klinik)
+        if not antrean_data:
+            print("Antrian kosong untuk klinik", klinik)
+        else:
+            for nomor_antrean, antrean_info in antrean_data.items():
+                print(f"Nomor Antrean: {nomor_antrean}")
+                print(f"Nama: {antrean_info['nama']}")
+                print(f"Tanggal Lahir: {antrean_info['tanggal_lahir']}")
+                print(f"Klinik: {antrean_info['klinik']}")
+                print(f"Waktu Antrean: {antrean_info['waktu_antrean']}")
+                print()
+
     def daftar_antrean(self):
         antrean_data = self.server.daftar_antrean()
-        for nomor_antrean, antrean_info in antrean_data.items():
-            print(f"Nomor Antrean: {nomor_antrean}")
-            print(f"Nama: {antrean_info['nama']}")
-            print(f"Tanggal Lahir: {antrean_info['tanggal_lahir']}")
-            print(f"Klinik: {antrean_info['klinik']}")
-            print(f"Waktu Antrean: {antrean_info['waktu_antrean']}")
-            print()
+        if not antrean_data:
+            print("Antrian kosong.")
+        else:
+            for klinik, antrean_klinik in antrean_data.items():
+                print(f"Klinik: {klinik}")
+                for nomor_antrean, antrean_info in antrean_klinik.items():
+                    print(f"Nomor Antrean: {nomor_antrean}")
+                    print(f"Nama: {antrean_info['nama']}")
+                    print(f"Tanggal Lahir: {antrean_info['tanggal_lahir']}")
+                    print(f"Klinik: {antrean_info['klinik']}")
+                    print(f"Waktu Antrean: {antrean_info['waktu_antrean']}")
+                    print()
 
-    def hapus_antrean(self, nomor_antrean):
+    def hapus_antrean(self):
         try:
-            result = self.server.hapus_antrean(nomor_antrean)
+            # Meminta input klinik
+            klinik = input("Masukkan klinik: ")
+            # Menampilkan daftar antrean untuk klinik tertentu
+            self.daftar_antrean_klinik(klinik)
+
+            # Meminta input nomor antrean
+            nomor_antrean = input("Masukkan nomor antrean yang akan dihapus: ")
+            result = self.server.hapus_antrean(klinik, nomor_antrean)
+
             if result:
-                print(f"Antrean {nomor_antrean} berhasil dihapus.")
+                print(f"Antrean {nomor_antrean} di klinik {klinik} berhasil dihapus.")
             else:
-                print(f"Antrean {nomor_antrean} tidak ditemukan.")
+                print(f"Antrean {nomor_antrean} di klinik {klinik} tidak ditemukan.")
         except Exception as e:
             print(f"Error: {e}")
 
@@ -77,10 +103,13 @@ if __name__ == "__main__":
         elif choice == "2":
             client.daftar_klinik()
         elif choice == "3":
-            client.daftar_antrean()
+            if client.is_admin:
+                klinik = input("Masukkan klinik yang ingin dilihat antreannya: ")
+                client.daftar_antrean_klinik(klinik)
+            else:
+                client.daftar_antrean()
         elif client.is_admin and choice == "4":
-            nomor_antrean = input("Masukkan nomor antrean yang akan dihapus: ")
-            client.hapus_antrean(nomor_antrean)
+            client.hapus_antrean()
         elif choice == "5":
             break
         else:
