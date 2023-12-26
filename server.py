@@ -32,16 +32,16 @@ class AntreanServer:
     def daftar_klinik(self):
         return list(self.klinik.keys())
 
-    def daftar_antrean(self):
-        return self.antrean_klinik
-
     def daftar_antrean_klinik(self, klinik):
         return self.antrean_klinik.get(klinik, {})
 
     def hapus_antrean(self, klinik, nomor_antrean):
         try:
             nomor_antrean_str = str(nomor_antrean)
-            if klinik in self.antrean_klinik and nomor_antrean_str in self.antrean_klinik[klinik]:
+            if (
+                klinik in self.antrean_klinik
+                and nomor_antrean_str in self.antrean_klinik[klinik]
+            ):
                 nomor_antrean_int = int(nomor_antrean)
 
                 # Hapus antrian dari klinik

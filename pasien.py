@@ -3,9 +3,8 @@ import datetime
 
 
 class AntreanClient:
-    def __init__(self, is_admin=False):
+    def __init__(self):
         self.server = ServerProxy("http://localhost:8000")
-        self.is_admin = is_admin
 
     def registrasi(self, nomor_rekam, nama, tanggal_lahir, klinik):
         nomor_antrean, waktu_antrean = self.server.registrasi(
@@ -48,49 +47,16 @@ class AntreanClient:
                     print(f"Waktu Antrean: {antrean_info['waktu_antrean']}")
                     print()
 
-    def hapus_antrean(self):
-        try:
-            # Meminta input klinik
-            klinik = input("Masukkan klinik: ")
-            # Menampilkan daftar antrean untuk klinik tertentu
-            self.daftar_antrean_klinik(klinik)
-
-            # Meminta input nomor antrean
-            nomor_antrean = input("Masukkan nomor antrean yang akan dihapus: ")
-            result = self.server.hapus_antrean(klinik, nomor_antrean)
-
-            if result:
-                print(f"Antrean {nomor_antrean} di klinik {klinik} berhasil dihapus.")
-            else:
-                print(f"Antrean {nomor_antrean} di klinik {klinik} tidak ditemukan.")
-        except Exception as e:
-            print(f"Error: {e}")
-
 
 if __name__ == "__main__":
-    role = input("Masukkan peran Anda (admin/client): ").lower()
-
-    if role == "admin":
-        password = input("Masukkan kata sandi admin: ")
-        if password != "adminpassword":
-            print("Kata sandi admin salah. Keluar.")
-            exit()
-
-        client = AntreanClient(is_admin=True)
-    elif role == "client":
-        client = AntreanClient()
-    else:
-        print("Peran tidak valid. Keluar.")
-        exit()
+    client = AntreanClient()
 
     while True:
-        print("\nMenu:")
+        print("\nMenu Pasien:")
         print("1. Registrasi Antrean")
         print("2. Daftar Klinik")
         print("3. Daftar Antrean")
-        if client.is_admin:
-            print("4. Hapus Antrean (Admin)")
-        print("5. Keluar")
+        print("4. keluar")
 
         choice = input("Pilih menu (1/2/3/4/5): ")
 
@@ -103,14 +69,9 @@ if __name__ == "__main__":
         elif choice == "2":
             client.daftar_klinik()
         elif choice == "3":
-            if client.is_admin:
-                klinik = input("Masukkan klinik yang ingin dilihat antreannya: ")
-                client.daftar_antrean_klinik(klinik)
-            else:
-                client.daftar_antrean()
-        elif client.is_admin and choice == "4":
-            client.hapus_antrean()
-        elif choice == "5":
+            klinik = input("Masukkan klinik yang ingin dilihat antreannya: ")
+            client.daftar_antrean_klinik(klinik)
+        elif choice == "4":
             break
         else:
             print("Pilihan tidak valid. Silakan pilih lagi.")
