@@ -1,5 +1,6 @@
 # Import modul yang dibutuhkan
 from xmlrpc.client import ServerProxy
+import datetime
 
 
 # Definisikan kelas AntreanPasien
@@ -12,6 +13,8 @@ class AntreanPasien:
 
     # Metode untuk registrasi pasien ke dalam antrean
     def registrasi(self, nomor_rekam, nama, tanggal_lahir, klinik):
+        # Set nomor rekam pasien
+        self.nomor_rekam = nomor_rekam
         # Panggil metode registrasi dari server dan dapatkan nomor antrean dan waktu antrean
         nomor_antrean, waktu_antrean = self.server.registrasi(
             nomor_rekam, nama, tanggal_lahir, klinik
@@ -50,11 +53,11 @@ class AntreanPasien:
             # Tampilkan pesan jika antrean tidak ditemukan
             if not antrean_found:
                 print(
-                    f"{'Anda tidak memiliki antrean' if self.nomor_rekam is not None else 'Antrean kosong'} untuk klinik {klinik}"
+                    f"{'Anda tidak memiliki antrean' if self.nomor_rekam is not None else 'Antrian kosong'} untuk klinik {klinik}"
                 )
         else:
             # Tampilkan pesan jika antrean kosong untuk klinik tertentu
-            print(f"Antrean kosong untuk klinik {klinik}")
+            print(f"Antrian kosong untuk klinik {klinik}")
 
 
 # Jalankan program jika dijalankan sebagai skrip utama
@@ -64,12 +67,12 @@ if __name__ == "__main__":
 
     # Loop utama program
     while True:
-        # Tampilkan menu pilihan kepada pengguna
+        # Menampilkan menu pilihan kepada pengguna
         print("\nMenu Pasien:")
         print("1. Registrasi Antrean")
         print("2. Daftar Klinik")
         print("3. Daftar Antrean")
-        print("4. Keluar")
+        print("4. keluar")
 
         # Terima input pilihan dari pengguna
         choice = input("Pilih menu (1/2/3/4): ")
