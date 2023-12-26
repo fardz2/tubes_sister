@@ -5,8 +5,10 @@ import datetime
 class AntreanClient:
     def __init__(self):
         self.server = ServerProxy("http://localhost:8000")
+        self.nomor_rekam = None
 
     def registrasi(self, nomor_rekam, nama, tanggal_lahir, klinik):
+        self.nomor_rekam = nomor_rekam
         nomor_antrean, waktu_antrean = self.server.registrasi(
             nomor_rekam, nama, tanggal_lahir, klinik
         )
@@ -21,31 +23,24 @@ class AntreanClient:
 
     def daftar_antrean_klinik(self, klinik):
         antrean_data = self.server.daftar_antrean_klinik(klinik)
-        if not antrean_data:
-            print("Antrian kosong untuk klinik", klinik)
-        else:
+        
+        # debugging
+        print("Received data from server:", antrean_data)
+        
+        if antrean_data:
+            antrean_found = False
             for nomor_antrean, antrean_info in antrean_data.items():
-                print(f"Nomor Antrean: {nomor_antrean}")
-                print(f"Nama: {antrean_info['nama']}")
-                print(f"Tanggal Lahir: {antrean_info['tanggal_lahir']}")
-                print(f"Klinik: {antrean_info['klinik']}")
-                print(f"Waktu Antrean: {antrean_info['waktu_antrean']}")
-                print()
-
-    def daftar_antrean(self):
-        antrean_data = self.server.daftar_antrean()
-        if not antrean_data:
-            print("Antrian kosong.")
-        else:
-            for klinik, antrean_klinik in antrean_data.items():
-                print(f"Klinik: {klinik}")
-                for nomor_antrean, antrean_info in antrean_klinik.items():
-                    print(f"Nomor Antrean: {nomor_antrean}")
-                    print(f"Nama: {antrean_info['nama']}")
-                    print(f"Tanggal Lahir: {antrean_info['tanggal_lahir']}")
-                    print(f"Klinik: {antrean_info['klinik']}")
+                if self.nomor_rekam is not None and antrean_info.get("nomor_rekam") == self.nomor_rekam:
+                    print(f"Nomor Antrean Anda: {nomor_antrean}")
                     print(f"Waktu Antrean: {antrean_info['waktu_antrean']}")
                     print()
+                    antrean_found = True
+                    break
+
+            if not antrean_found:
+                print(f"{'Anda tidak memiliki antrean' if self.nomor_rekam is not None else 'Antrian kosong'} untuk klinik {klinik}")
+        else:
+            print(f"Antrian kosong untuk klinik {klinik}")
 
 
 if __name__ == "__main__":
@@ -58,7 +53,7 @@ if __name__ == "__main__":
         print("3. Daftar Antrean")
         print("4. keluar")
 
-        choice = input("Pilih menu (1/2/3/4/5): ")
+        choice = input("Pilih menu (1/2/3/4): ")
 
         if choice == "1":
             nomor_rekam = input("Masukkan nomor rekam medis: ")
