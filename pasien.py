@@ -53,11 +53,11 @@ class AntreanPasien:
             # Tampilkan pesan jika antrean tidak ditemukan
             if not antrean_found:
                 print(
-                    f"{'Anda tidak memiliki antrean' if self.nomor_rekam is not None else 'Antrian kosong'} untuk klinik {klinik}"
+                    f"{'Anda tidak memiliki antrean' if self.nomor_rekam is not None else 'antrean kosong'} untuk klinik {klinik}"
                 )
         else:
             # Tampilkan pesan jika antrean kosong untuk klinik tertentu
-            print(f"Antrian kosong untuk klinik {klinik}")
+            print(f"antrean kosong untuk klinik {klinik}")
 
 
 # Jalankan program jika dijalankan sebagai skrip utama
